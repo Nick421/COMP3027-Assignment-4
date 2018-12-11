@@ -58,7 +58,6 @@ class Main
 		}
 		reader.close();
 
-		// TODO: implement your algorithm (i.e. by building a suitable flow network)
 
 		/* example of building a graph and running ford-fulkerson, using jgrapht
 		 * see http://jgrapht.org and http://jgrapht.org/javadoc/
@@ -68,50 +67,54 @@ class Main
 		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> graph = new SimpleDirectedWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		graph.addVertex("source");
 		graph.addVertex("sink");
-		// set source -> students
+		
+		// set source -> students, takes O(n)
 		for (int i =0; i< n; i++){
 			graph.addVertex("s"+i);
 			graph.addEdge("source", "s"+i);
 			graph.setEdgeWeight(graph.getEdge("source", "s"+i), 1);
 		}
-		// set p in -> p out
+		// set p in -> p out, takes O(l)
 		for (int i =0; i< l; i++){
 			graph.addVertex("pin"+i);
 			graph.addVertex("pout"+i);
 			graph.addEdge("pin"+i, "pout"+i);
 			graph.setEdgeWeight(graph.getEdge("pin"+i, "pout"+i), p[i]);
 		}
-		// set students -> p in 
+		// set students -> p in , takes O(nl)
 		for (int i =0; i< w.size(); i++){
 			for(int j = 0; j < w.get(i).size(); j++){
-				graph.addEdge("s"+i, "pin"+w.get[i].get[j]);
-				graph.setEdgeWeight(graph.getEdge("s"+i, "pin"+w.get[i].get[j]), 1);
+				graph.addEdge("s"+i, "pin"+w.get(i).get(j));
+				graph.setEdgeWeight(graph.getEdge("s"+i, "pin"+w.get(i).get(j)), 1);
 			}
 		}
 		
-		//set teachers -> sink
+		//set teachers -> sink, takes O(m)
 		for(int i = 0; i < m; i++){
 			graph.addVertex("t"+i);
 			graph.addEdge("t"+i, "sink");
 			graph.setEdgeWeight(graph.getEdge("t"+i, "sink"), s[i]);
 		}
 		
-		//set p out -> teacher
-		for(int i = 0; i < t.size; i++){
-			for(int j = 0; j < t.get[i].size; i++){
-				graph.addEdge("pout"+t.get[i].get[j], "t"+i);
-				graph.setEdgeWeight(graph.getEdge("pout"+t.get[i].get[j], "t"+i), p[t.get[i].get[j]]);
+		//set p out -> teacher, takes O(ml)
+		for(int i = 0; i < t.size(); i++){
+			for(int j = 0; j < t.get(i).size(); j++){
+				graph.addEdge("pout"+t.get(i).get(j), "t"+i);
+				graph.setEdgeWeight(graph.getEdge("pout"+t.get(i).get(j), "t"+i), p[t.get(i).get(j)]);
 			}
 			
 		}
 		
+		//Edmond-karp O(nm^2);
 		EdmondsKarpMFImpl<String, DefaultWeightedEdge> ek = new EdmondsKarpMFImpl<String, DefaultWeightedEdge>(graph);
 		double max_flow = ek.calculateMaximumFlow("source", "sink");
 		// the variable max_flow is now the value of the maximum flow on this graph,
-		// from vertex "a" to vertex "c"
+		// from vertex "source" to vertex "sink"
 
-		// TODO: deduce the answer to the original problem, and print it
-		String answer = "YES"; // or "NO"
+		String answer = "NO";
+		if (max_flow == n){
+			answer = "YES";
+		}
 		System.out.println(answer);
 	}
 
